@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jukebox</title>
+<style>
+body{
+margin:0;
+background:black;
+}
+#player{
+width:100vw;
+height:100vh;
+}
+.controls{
+position:fixed;
+bottom:10px;
+left:10px;
+z-index:10;
+}
+button{
+font-size:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="player"></div>
+
+<div class="controls">
+<button onclick="skip()">⏭</button>
+<button onclick="toggleLoop()">🔁</button>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
