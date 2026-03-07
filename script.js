@@ -19,6 +19,8 @@ let queueKeys=[];
 
 let loop=false;
 
+const titleCache={};
+
 /* ----------------
 YouTube Player
 ---------------- */
@@ -161,22 +163,64 @@ function updateQueueUI(){
 
  queue.forEach((url,i)=>{
 
+  const id=getID(url);
+  const thumb=`https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+
   const li=document.createElement("li");
 
+  const title=titleCache[url]||"読み込み中...";
+
   li.innerHTML=`
-  <span>${url}</span>
+  <div style="display:flex;gap:10px;align-items:flex-start">
 
-  <div class="buttons">
+    <img src="${thumb}" width="120">
 
-  <button onclick="forcePlay(${i})">▶</button>
-  <button onclick="moveUp(${i})">↑</button>
-  <button onclick="moveDown(${i})">↓</button>
-  <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+    <div style="flex:1">
+
+      <div style="font-weight:bold">${title}</div>
+      <div style="font-size:12px;color:#666">${url}</div>
+
+      <div class="buttons">
+
+      <button onclick="forcePlay(${i})">▶</button>
+      <button onclick="moveUp(${i})">↑</button>
+      <button onclick="moveDown(${i})">↓</button>
+      <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+
+      </div>
+
+    </div>
 
   </div>
   `;
 
   list.appendChild(li);
+
+  if(!titleCache[url]){
+   fetchTitle(url);
+  }
+
+ });
+
+}
+
+/* ----------------
+Title Fetch
+---------------- */
+
+function fetchTitle(url){
+
+ fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
+ .then(r=>r.json())
+ .then(data=>{
+
+  titleCache[url]=data.title;
+  updateQueueUI();
+
+ })
+ .catch(()=>{
+
+  titleCache[url]="タイトル取得失敗";
 
  });
 
