@@ -38,7 +38,6 @@ function onYouTubeIframeAPIReady(){
  });
 
  watchQueue();
- watchNowPlaying();
 }
 
 function onStateChange(e){
@@ -77,54 +76,14 @@ function watchQueue(){
 
 function playNext(){
 
- if(queue.length===0) return;
+ if(queue.length<=1) return;
 
- startPlay(queue[0],queueKeys[0]);
+ const nextUrl=queue[1];
+ const nextKey=queueKeys[1];
 
-}
+ const id=getID(nextUrl);
 
-/* ----------------
-Start Play
----------------- */
-
-function startPlay(url,key){
-
- const id=getID(url);
-
- if(player){
-  player.loadVideoById(id);
- }
-
- db.ref("nowPlaying").set(url);
-
- if(key){
-  db.ref("queue/"+key).remove();
- }
-
-}
-
-/* ----------------
-Now Playing
----------------- */
-
-function watchNowPlaying(){
-
- db.ref("nowPlaying").on("value",snap=>{
-
-  const el=document.getElementById("nowPlaying");
-
-  if(!el) return;
-
-  const url=snap.val();
-
-  if(!url){
-   el.innerHTML="なし";
-   return;
-  }
-
-  el.innerHTML=url;
-
- });
+ player.loadVideoById(id);
 
 }
 
@@ -140,13 +99,9 @@ function send(){
  const url=input.value.trim();
  if(!url) return;
 
- const ref=db.ref("queue").push(url);
+ db.ref("queue").push(url);
 
  input.value="";
-
- if(queue.length===0){
-  startPlay(url,ref.key);
- }
 
 }
 
@@ -170,6 +125,23 @@ function updateQueueUI(){
 
   const title=titleCache[url]||"読み込み中...";
 
+  let buttons="";
+
+  if(i===0){
+
+   buttons=`<span style="color:red;font-weight:bold">▶ 再生中</span>`;
+
+  }else{
+
+   buttons=`
+   <button onclick="forcePlay(${i})">▶</button>
+   <button onclick="moveUp(${i})">↑</button>
+   <button onclick="moveDown(${i})">↓</button>
+   <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+   `;
+
+  }
+
   li.innerHTML=`
   <div style="display:flex;gap:10px;align-items:flex-start">
 
@@ -181,12 +153,7 @@ function updateQueueUI(){
       <div style="font-size:12px;color:#666">${url}</div>
 
       <div class="buttons">
-
-      <button onclick="forcePlay(${i})">▶</button>
-      <button onclick="moveUp(${i})">↑</button>
-      <button onclick="moveDown(${i})">↓</button>
-      <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
-
+      ${buttons}
       </div>
 
     </div>
@@ -233,9 +200,9 @@ Force Play
 function forcePlay(index){
 
  const url=queue[index];
- const key=queueKeys[index];
+ const id=getID(url);
 
- startPlay(url,key);
+ player.loadVideoById(id);
 
 }
 
@@ -255,7 +222,7 @@ Reorder
 
 function moveUp(index){
 
- if(index===0) return;
+ if(index<=1) return;
 
  const aKey=queueKeys[index];
  const bKey=queueKeys[index-1];
@@ -320,4 +287,3 @@ function getID(url){
 }
 
 watchQueue();
-watchNowPlaying();
