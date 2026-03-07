@@ -45,7 +45,7 @@ function onStateChange(e){
  if(e.data===0){
 
   if(loop){
-   player.playVideo();
+   replayCurrent();
    return;
   }
 
@@ -76,6 +76,12 @@ function watchQueue(){
 
 function playNext(){
 
+ if(queue.length===0) return;
+
+ const currentKey=queueKeys[0];
+
+ db.ref("queue/"+currentKey).remove();
+
  if(queue.length<=1) return;
 
  const nextUrl=queue[1];
@@ -91,11 +97,13 @@ Replay Current
 
 function replayCurrent(){
 
+ if(!player) return;
  if(queue.length===0) return;
 
  const url=queue[0];
  const id=getID(url);
 
+ player.stopVideo();
  player.loadVideoById(id);
 
 }
