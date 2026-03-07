@@ -99,3 +99,40 @@ if(m)return m[1];
 return url.split("/").pop();
 
 }
+
+function loadAdminQueue(){
+
+const list = document.getElementById("queue");
+
+if(!list) return;
+
+db.ref("queue").on("value",snap=>{
+
+list.innerHTML="";
+
+const data = snap.val();
+
+if(!data) return;
+
+Object.entries(data).forEach(([key,url])=>{
+
+const li = document.createElement("li");
+
+li.innerHTML = `
+${url}
+<button onclick="removeQueue('${key}')">削除</button>
+`;
+
+list.appendChild(li);
+
+});
+
+});
+
+}
+
+function removeQueue(key){
+
+db.ref("queue/"+key).remove();
+
+}
