@@ -79,9 +79,22 @@ function playNext(){
  if(queue.length<=1) return;
 
  const nextUrl=queue[1];
- const nextKey=queueKeys[1];
-
  const id=getID(nextUrl);
+
+ player.loadVideoById(id);
+
+}
+
+/* ----------------
+Replay Current
+---------------- */
+
+function replayCurrent(){
+
+ if(queue.length===0) return;
+
+ const url=queue[0];
+ const id=getID(url);
 
  player.loadVideoById(id);
 
