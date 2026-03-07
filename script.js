@@ -77,26 +77,33 @@ function playNext(){
 
  if(queue.length===0) return;
 
- const url=queue[0];
+ startPlay(queue[0],queueKeys[0]);
+
+}
+
+/* ----------------
+Start Play
+---------------- */
+
+function startPlay(url,key){
+
  const id=getID(url);
 
- player.loadVideoById(id);
+ if(player){
+  player.loadVideoById(id);
+ }
 
- moveToNowPlaying(queueKeys[0],url);
+ db.ref("nowPlaying").set(url);
+
+ if(key){
+  db.ref("queue/"+key).remove();
+ }
 
 }
 
 /* ----------------
 Now Playing
 ---------------- */
-
-function moveToNowPlaying(key,url){
-
- db.ref("nowPlaying").set(url);
-
- db.ref("queue/"+key).remove();
-
-}
 
 function watchNowPlaying(){
 
@@ -131,9 +138,13 @@ function send(){
  const url=input.value.trim();
  if(!url) return;
 
- db.ref("queue").push(url);
+ const ref=db.ref("queue").push(url);
 
  input.value="";
+
+ if(queue.length===0){
+  startPlay(url,ref.key);
+ }
 
 }
 
@@ -178,11 +189,9 @@ Force Play
 function forcePlay(index){
 
  const url=queue[index];
- const id=getID(url);
+ const key=queueKeys[index];
 
- player.loadVideoById(id);
-
- moveToNowPlaying(queueKeys[index],url);
+ startPlay(url,key);
 
 }
 
