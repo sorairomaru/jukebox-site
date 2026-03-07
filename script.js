@@ -1,8 +1,12 @@
 const firebaseConfig = {
-apiKey: "YOURKEY",
-authDomain: "YOURDOMAIN",
-databaseURL: "YOURDB",
-projectId: "YOURID"
+  apiKey: "AIzaSyCpxkOCrAjqD546uAS_EphDS5CemuJy59s",
+  authDomain: "player-5f939.firebaseapp.com",
+  databaseURL: "https://player-5f939-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "player-5f939",
+  storageBucket: "player-5f939.firebasestorage.app",
+  messagingSenderId: "547215751927",
+  appId: "1:547215751927:web:2e15e53ef4ee7ef11531f2",
+  measurementId: "G-K79JSXENG3"
 };
 
 firebase.initializeApp(firebaseConfig);
