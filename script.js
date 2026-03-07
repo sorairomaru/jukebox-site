@@ -13,6 +13,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let player;
+
 let queue=[];
 let queueKeys=[];
 let loop=false;
@@ -34,6 +35,7 @@ function onYouTubeIframeAPIReady(){
  });
 
  watchQueue();
+ watchNowPlaying();
 }
 
 function onStateChange(e){
@@ -79,7 +81,40 @@ function playNext(){
 
  player.loadVideoById(id);
 
- removeQueue(queueKeys[0]);
+ moveToNowPlaying(queueKeys[0],url);
+
+}
+
+/* ----------------
+Now Playing
+---------------- */
+
+function moveToNowPlaying(key,url){
+
+ db.ref("nowPlaying").set(url);
+
+ db.ref("queue/"+key).remove();
+
+}
+
+function watchNowPlaying(){
+
+ db.ref("nowPlaying").on("value",snap=>{
+
+  const el=document.getElementById("nowPlaying");
+
+  if(!el) return;
+
+  const url=snap.val();
+
+  if(!url){
+   el.innerHTML="なし";
+   return;
+  }
+
+  el.innerHTML=url;
+
+ });
 
 }
 
@@ -102,7 +137,7 @@ function send(){
 }
 
 /* ----------------
-Admin UI
+Queue UI
 ---------------- */
 
 function updateQueueUI(){
@@ -146,7 +181,7 @@ function forcePlay(index){
 
  player.loadVideoById(id);
 
- db.ref("queue/"+queueKeys[index]).remove();
+ moveToNowPlaying(queueKeys[index],url);
 
 }
 
@@ -209,6 +244,7 @@ function skip(){
 function toggleLoop(){
 
  loop=!loop;
+
  alert("Loop:"+loop);
 
 }
@@ -231,3 +267,4 @@ function getID(url){
 }
 
 watchQueue();
+watchNowPlaying();
