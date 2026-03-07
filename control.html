@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jukebox Control</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="send-container">
+
+<h2>YouTube URL送信</h2>
+
+<input id="url" placeholder="https://youtube.com/...">
+<button onclick="send()">送信</button>
+
+<h2>Queue</h2>
+
+<ul id="queue"></ul>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
