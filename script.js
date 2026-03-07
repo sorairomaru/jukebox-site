@@ -13,13 +13,13 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let player;
-let queue = [];
-let queueKeys = [];
-let loop = false;
+let queue=[];
+let queueKeys=[];
+let loop=false;
 
-/* =====================
-   YouTube Player
-===================== */
+/* ----------------
+YouTube Player
+---------------- */
 
 function onYouTubeIframeAPIReady(){
 
@@ -38,36 +38,33 @@ function onYouTubeIframeAPIReady(){
 
 function onStateChange(e){
 
- if(e.data === 0){
+ if(e.data===0){
 
   if(loop){
    player.playVideo();
    return;
   }
 
-  removeFirst();
+  playNext();
+
  }
 
 }
 
-/* =====================
-   Queue
-===================== */
+/* ----------------
+Queue
+---------------- */
 
 function watchQueue(){
 
  db.ref("queue").on("value",snap=>{
 
-  const data = snap.val() || {};
+  const data=snap.val()||{};
 
-  queue = Object.values(data);
-  queueKeys = Object.keys(data);
+  queue=Object.values(data);
+  queueKeys=Object.keys(data);
 
   updateQueueUI();
-
-  if(player && player.getPlayerState() !== 1){
-   playNext();
-  }
 
  });
 
@@ -75,61 +72,61 @@ function watchQueue(){
 
 function playNext(){
 
- if(queue.length === 0) return;
+ if(queue.length===0) return;
 
- const id = getID(queue[0]);
+ const url=queue[0];
+ const id=getID(url);
 
  player.loadVideoById(id);
 
-}
-
-function removeFirst(){
-
- if(queueKeys.length === 0) return;
-
- db.ref("queue/"+queueKeys[0]).remove();
+ removeQueue(queueKeys[0]);
 
 }
 
-/* =====================
-   Send
-===================== */
+/* ----------------
+Send
+---------------- */
 
 function send(){
 
- const input = document.getElementById("url");
-
+ const input=document.getElementById("url");
  if(!input) return;
 
- const url = input.value.trim();
-
+ const url=input.value.trim();
  if(!url) return;
 
  db.ref("queue").push(url);
 
- input.value = "";
+ input.value="";
 
 }
 
-/* =====================
-   Admin Queue UI
-===================== */
+/* ----------------
+Admin UI
+---------------- */
 
 function updateQueueUI(){
 
- const list = document.getElementById("queue");
-
+ const list=document.getElementById("queue");
  if(!list) return;
 
- list.innerHTML = "";
+ list.innerHTML="";
 
  queue.forEach((url,i)=>{
 
-  const li = document.createElement("li");
+  const li=document.createElement("li");
 
-  li.innerHTML = `
-   ${url}
-   <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+  li.innerHTML=`
+  <span>${url}</span>
+
+  <div class="buttons">
+
+  <button onclick="forcePlay(${i})">▶</button>
+  <button onclick="moveUp(${i})">↑</button>
+  <button onclick="moveDown(${i})">↓</button>
+  <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+
+  </div>
   `;
 
   list.appendChild(li);
@@ -138,39 +135,93 @@ function updateQueueUI(){
 
 }
 
+/* ----------------
+Force Play
+---------------- */
+
+function forcePlay(index){
+
+ const url=queue[index];
+ const id=getID(url);
+
+ player.loadVideoById(id);
+
+ db.ref("queue/"+queueKeys[index]).remove();
+
+}
+
+/* ----------------
+Queue Remove
+---------------- */
+
 function removeQueue(key){
 
  db.ref("queue/"+key).remove();
 
 }
 
-/* =====================
-   Controls
-===================== */
+/* ----------------
+Reorder
+---------------- */
+
+function moveUp(index){
+
+ if(index===0) return;
+
+ const aKey=queueKeys[index];
+ const bKey=queueKeys[index-1];
+
+ const updates={};
+
+ updates["queue/"+aKey]=queue[index-1];
+ updates["queue/"+bKey]=queue[index];
+
+ db.ref().update(updates);
+
+}
+
+function moveDown(index){
+
+ if(index===queue.length-1) return;
+
+ const aKey=queueKeys[index];
+ const bKey=queueKeys[index+1];
+
+ const updates={};
+
+ updates["queue/"+aKey]=queue[index+1];
+ updates["queue/"+bKey]=queue[index];
+
+ db.ref().update(updates);
+
+}
+
+/* ----------------
+Controls
+---------------- */
 
 function skip(){
 
- removeFirst();
+ playNext();
 
 }
 
 function toggleLoop(){
 
- loop = !loop;
-
- alert("Loop: "+loop);
+ loop=!loop;
+ alert("Loop:"+loop);
 
 }
 
-/* =====================
-   Utility
-===================== */
+/* ----------------
+Utility
+---------------- */
 
 function getID(url){
 
- let match = url.match(/v=([^&]+)/);
+ let m=url.match(/v=([^&]+)/);
 
- if(match) return match[1];
+ if(m) return m[1];
 
  if(url.includes("youtu.be"))
   return url.split("/").pop();
@@ -178,9 +229,5 @@ function getID(url){
  return url;
 
 }
-
-/* =====================
-   Page Init
-===================== */
 
 watchQueue();
