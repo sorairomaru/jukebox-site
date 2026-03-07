@@ -36,6 +36,7 @@ function onYouTubeIframeAPIReady(){
  });
 
  watchQueue();
+ watchNowPlaying();
 }
 
 function onStateChange(e){
@@ -76,10 +77,52 @@ function playNext(){
 
  if(queue.length===0) return;
 
- const url=queue[0];
+ startPlay(queue[0],queueKeys[0]);
+
+}
+
+/* ----------------
+Start Play
+---------------- */
+
+function startPlay(url,key){
+
  const id=getID(url);
 
- player.loadVideoById(id);
+ if(player){
+  player.loadVideoById(id);
+ }
+
+ db.ref("nowPlaying").set(url);
+
+ if(key){
+  db.ref("queue/"+key).remove();
+ }
+
+}
+
+/* ----------------
+Now Playing
+---------------- */
+
+function watchNowPlaying(){
+
+ db.ref("nowPlaying").on("value",snap=>{
+
+  const el=document.getElementById("nowPlaying");
+
+  if(!el) return;
+
+  const url=snap.val();
+
+  if(!url){
+   el.innerHTML="なし";
+   return;
+  }
+
+  el.innerHTML=url;
+
+ });
 
 }
 
@@ -95,9 +138,13 @@ function send(){
  const url=input.value.trim();
  if(!url) return;
 
- db.ref("queue").push(url);
+ const ref=db.ref("queue").push(url);
 
  input.value="";
+
+ if(queue.length===0){
+  startPlay(url,ref.key);
+ }
 
 }
 
@@ -116,31 +163,18 @@ function updateQueueUI(){
 
   const li=document.createElement("li");
 
-  if(i===0){
+  li.innerHTML=`
+  <span>${url}</span>
 
-   li.innerHTML=`
-   <span>${url}</span>
-   <div class="buttons">
-   ▶ 再生中
-   </div>
-   `;
+  <div class="buttons">
 
-  }else{
+  <button onclick="forcePlay(${i})">▶</button>
+  <button onclick="moveUp(${i})">↑</button>
+  <button onclick="moveDown(${i})">↓</button>
+  <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
 
-   li.innerHTML=`
-   <span>${url}</span>
-
-   <div class="buttons">
-
-   <button onclick="forcePlay(${i})">▶</button>
-   <button onclick="moveUp(${i})">↑</button>
-   <button onclick="moveDown(${i})">↓</button>
-   <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
-
-   </div>
-   `;
-
-  }
+  </div>
+  `;
 
   list.appendChild(li);
 
@@ -155,9 +189,9 @@ Force Play
 function forcePlay(index){
 
  const url=queue[index];
- const id=getID(url);
+ const key=queueKeys[index];
 
- player.loadVideoById(id);
+ startPlay(url,key);
 
 }
 
@@ -177,7 +211,7 @@ Reorder
 
 function moveUp(index){
 
- if(index<=1) return;
+ if(index===0) return;
 
  const aKey=queueKeys[index];
  const bKey=queueKeys[index-1];
@@ -213,12 +247,7 @@ Controls
 
 function skip(){
 
- if(queue.length<=1) return;
-
- const next=queue[1];
- const id=getID(next);
-
- player.loadVideoById(id);
+ playNext();
 
 }
 
@@ -247,3 +276,4 @@ function getID(url){
 }
 
 watchQueue();
+watchNowPlaying();
