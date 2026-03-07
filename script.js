@@ -13,126 +13,174 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let player;
-let queue=[];
-let loop=false;
+let queue = [];
+let queueKeys = [];
+let loop = false;
+
+/* =====================
+   YouTube Player
+===================== */
 
 function onYouTubeIframeAPIReady(){
 
-player = new YT.Player('player',{
-height:'100%',
-width:'100%',
-events:{
-'onStateChange':onStateChange
-}
-});
+ if(!document.getElementById("player")) return;
 
-watchQueue();
+ player = new YT.Player('player',{
+  height:'100%',
+  width:'100%',
+  events:{
+   'onStateChange':onStateChange
+  }
+ });
+
+ watchQueue();
 }
 
 function onStateChange(e){
 
-if(e.data==0){
+ if(e.data === 0){
 
-if(loop){
-player.playVideo();
-return;
+  if(loop){
+   player.playVideo();
+   return;
+  }
+
+  removeFirst();
+ }
+
 }
 
-queue.shift();
-playNext();
+/* =====================
+   Queue
+===================== */
 
-}
+function watchQueue(){
+
+ db.ref("queue").on("value",snap=>{
+
+  const data = snap.val() || {};
+
+  queue = Object.values(data);
+  queueKeys = Object.keys(data);
+
+  updateQueueUI();
+
+  if(player && player.getPlayerState() !== 1){
+   playNext();
+  }
+
+ });
+
 }
 
 function playNext(){
 
-if(queue.length==0)return;
+ if(queue.length === 0) return;
 
-let id = getID(queue[0]);
+ const id = getID(queue[0]);
 
-player.loadVideoById(id);
+ player.loadVideoById(id);
+
+}
+
+function removeFirst(){
+
+ if(queueKeys.length === 0) return;
+
+ db.ref("queue/"+queueKeys[0]).remove();
 
 }
 
-function watchQueue(){
-
-db.ref("queue").on("value",snap=>{
-
-queue = Object.values(snap.val()||{});
-
-if(player && player.getPlayerState()!=1){
-playNext();
-}
-
-});
-
-}
+/* =====================
+   Send
+===================== */
 
 function send(){
 
-let url=document.getElementById("url").value;
+ const input = document.getElementById("url");
 
-db.ref("queue").push(url);
+ if(!input) return;
 
-}
+ const url = input.value.trim();
 
-function skip(){
+ if(!url) return;
 
-queue.shift();
-playNext();
+ db.ref("queue").push(url);
 
-}
-
-function toggleLoop(){
-
-loop=!loop;
+ input.value = "";
 
 }
 
-function getID(url){
+/* =====================
+   Admin Queue UI
+===================== */
 
-let r=/v=([^&]+)/;
-let m=url.match(r);
+function updateQueueUI(){
 
-if(m)return m[1];
+ const list = document.getElementById("queue");
 
-return url.split("/").pop();
+ if(!list) return;
 
-}
+ list.innerHTML = "";
 
-function loadAdminQueue(){
+ queue.forEach((url,i)=>{
 
-const list = document.getElementById("queue");
+  const li = document.createElement("li");
 
-if(!list) return;
+  li.innerHTML = `
+   ${url}
+   <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+  `;
 
-db.ref("queue").on("value",snap=>{
+  list.appendChild(li);
 
-list.innerHTML="";
-
-const data = snap.val();
-
-if(!data) return;
-
-Object.entries(data).forEach(([key,url])=>{
-
-const li = document.createElement("li");
-
-li.innerHTML = `
-${url}
-<button onclick="removeQueue('${key}')">削除</button>
-`;
-
-list.appendChild(li);
-
-});
-
-});
+ });
 
 }
 
 function removeQueue(key){
 
-db.ref("queue/"+key).remove();
+ db.ref("queue/"+key).remove();
 
 }
+
+/* =====================
+   Controls
+===================== */
+
+function skip(){
+
+ removeFirst();
+
+}
+
+function toggleLoop(){
+
+ loop = !loop;
+
+ alert("Loop: "+loop);
+
+}
+
+/* =====================
+   Utility
+===================== */
+
+function getID(url){
+
+ let match = url.match(/v=([^&]+)/);
+
+ if(match) return match[1];
+
+ if(url.includes("youtu.be"))
+  return url.split("/").pop();
+
+ return url;
+
+}
+
+/* =====================
+   Page Init
+===================== */
+
+watchQueue();
