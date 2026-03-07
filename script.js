@@ -16,6 +16,9 @@ let player;
 
 let queue=[];
 let queueKeys=[];
+let currentKey=null;
+let currentURL=null;
+
 let loop=false;
 
 /* ----------------
@@ -40,6 +43,17 @@ function onYouTubeIframeAPIReady(){
 
 function onStateChange(e){
 
+ /* 再生開始 */
+ if(e.data===1){
+
+  if(currentKey){
+   moveToNowPlaying(currentKey,currentURL);
+   currentKey=null;
+  }
+
+ }
+
+ /* 再生終了 */
  if(e.data===0){
 
   if(loop){
@@ -79,9 +93,10 @@ function playNext(){
  const url=queue[0];
  const id=getID(url);
 
- player.loadVideoById(id);
+ currentKey=queueKeys[0];
+ currentURL=url;
 
- moveToNowPlaying(queueKeys[0],url);
+ player.loadVideoById(id);
 
 }
 
@@ -102,7 +117,6 @@ function watchNowPlaying(){
  db.ref("nowPlaying").on("value",snap=>{
 
   const el=document.getElementById("nowPlaying");
-
   if(!el) return;
 
   const url=snap.val();
@@ -179,9 +193,10 @@ function forcePlay(index){
  const url=queue[index];
  const id=getID(url);
 
- player.loadVideoById(id);
+ currentKey=queueKeys[index];
+ currentURL=url;
 
- moveToNowPlaying(queueKeys[index],url);
+ player.loadVideoById(id);
 
 }
 
@@ -244,7 +259,6 @@ function skip(){
 function toggleLoop(){
 
  loop=!loop;
-
  alert("Loop:"+loop);
 
 }
