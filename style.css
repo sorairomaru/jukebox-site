@@ -43,7 +43,7 @@ gap:20px;
 }
 
 input{
-width:300px;
+width:320px;
 padding:10px;
 font-size:16px;
 }
@@ -51,17 +51,25 @@ font-size:16px;
 ul{
 list-style:none;
 padding:0;
-width:500px;
+width:550px;
 }
 
 li{
 display:flex;
 justify-content:space-between;
+align-items:center;
 padding:10px;
 border-bottom:1px solid #444;
 }
 
 .buttons{
 display:flex;
-gap:5px;
+gap:6px;
+}
+
+#nowPlaying{
+width:550px;
+padding:10px;
+background:#222;
+border-radius:5px;
 }
