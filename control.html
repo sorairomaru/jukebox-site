@@ -15,11 +15,9 @@
 <input id="url" placeholder="https://youtube.com/...">
 <button onclick="send()">送信</button>
 
-<!-- <h2>現在再生中</h2>
-<div id="nowPlaying"></div> -->
+<button onclick="reload()">再読み込み</button>
+<button onclick="skip()">スキップ</button>
 
-<button onclick="reload_send()">再生中の動画を再読み込み</button>
-  
 <h2>Queue</h2>
 <ul id="queue"></ul>
 
@@ -27,7 +25,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="/socket.io/socket.io.js"></script>
 
 <script src="control.js"></script>
 
