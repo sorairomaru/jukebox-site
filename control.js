@@ -163,15 +163,42 @@ function fetchTitle(url) {
 Force Play
 ---------------- */
 
-function forcePlay(index) {
+// function forcePlay(index,key) {
+
+ // db.ref("control").set({
+ //  type: "force",
+ //  url: queue[index],
+ //  time: Date.now()
+ // });
+
+// }
+function forcePlay(index){
+
+ if(index === 0) return;
+
+ const updates = {};
+
+ const targetKey = queueKeys[index];
+ const currentKey = queueKeys[0];
+
+ const targetUrl = queue[index];
+
+ /* 再生中削除 */
+ updates["queue/" + currentKey] = null;
+
+ /* 押した動画を一番上に */
+ updates["queue/" + targetKey] = targetUrl;
+
+ db.ref().update(updates);
 
  db.ref("control").set({
-  type: "force",
-  url: queue[index],
-  time: Date.now()
+  type:"reload",
+  time:Date.now()
  });
 
 }
+
+
 
 /* ----------------
 Reload
