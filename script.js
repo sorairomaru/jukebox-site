@@ -82,9 +82,9 @@ function playNext(){
 
  db.ref("queue/"+currentKey).remove();
 
- if(queue.length<=1) return;
+ if(queue.length==0) return;
 
- const nextUrl=queue[1];
+ const nextUrl=queue[0];
  const id=getID(nextUrl);
 
  player.loadVideoById(id);
