@@ -31,8 +31,6 @@ function send(){
  const input=document.getElementById("url");
  const url=input.value.trim();
  if(!url) return;
- url = url.split("&")[0];
- url = url.split("?si=")[0];
  db.ref("queue").push(url);
  input.value="";
 
