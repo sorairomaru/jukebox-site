@@ -68,7 +68,7 @@ function watchQueue(){
   queue=Object.values(data);
   queueKeys=Object.keys(data);
 
-  updateQueueUI();
+  socket.emit("updateQueueUI")
 
  });
 
