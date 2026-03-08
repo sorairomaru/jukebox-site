@@ -12,6 +12,7 @@ let player;
 let queue=[];
 let queueKeys=[];
 let loop=false;
+let loopMode="none";
 
 function onYouTubeIframeAPIReady(){
 
@@ -24,6 +25,7 @@ function onYouTubeIframeAPIReady(){
  });
 
  watchQueue();
+ watchLoop();
  watchControl();
 
 }
@@ -35,6 +37,27 @@ function onStateChange(e){
   if(loop){
    reload();
    return;
+  }
+  
+  if(loopMode==="one"){
+    reload();
+    return;
+  }  
+
+  if(loopMode==="all"){
+
+    if(queue.length>0){
+  
+     const firstKey = queueKeys[0];
+     const firstUrl = queue[0];
+  
+     db.ref("queue/"+firstKey).remove();
+  
+     db.ref("queue").push(firstUrl);
+  
+    }
+  
+    return;
   }
 
   playNext();
@@ -70,6 +93,16 @@ function watchControl(){
   if(cmd.type==="reload") reload();
   if(cmd.type==="skip") skip();
   if(cmd.type==="force") loadVideo(cmd.url);
+
+ });
+
+}
+
+function watchLoop(){
+
+ db.ref("loop/mode").on("value",snap=>{
+
+  loopMode = snap.val() || "none";
 
  });
 
