@@ -55,24 +55,24 @@ const titleCache={};
 
 // }
 
-// /* ----------------
-// Queue
-// ---------------- */
+/* ----------------
+Queue
+---------------- */
 
-// function watchQueue(){
+function watchQueue(){
 
-//  db.ref("queue").on("value",snap=>{
+ db.ref("queue").on("value",snap=>{
 
-//   const data=snap.val()||{};
+  const data=snap.val()||{};
 
-//   queue=Object.values(data);
-//   queueKeys=Object.keys(data);
+  queue=Object.values(data);
+  queueKeys=Object.keys(data);
 
-//   updateQueueUI();
+  updateQueueUI();
 
-//  });
+ });
 
-// }
+}
 
 // function playNext(){
 
@@ -317,4 +317,4 @@ function getID(url){
 
 }
 
-// watchQueue();
+watchQueue();
