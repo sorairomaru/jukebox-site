@@ -1,24 +1,34 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyCpx...",
+  apiKey: "AIzaSyCpxkOCrAjqD546uAS_EphDS5CemuJy59s",
   authDomain: "player-5f939.firebaseapp.com",
   databaseURL: "https://player-5f939-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "player-5f939"
+  projectId: "player-5f939",
+  storageBucket: "player-5f939.firebasestorage.app",
+  messagingSenderId: "547215751927",
+  appId: "1:547215751927:web:2e15e53ef4ee7ef11531f2",
+  measurementId: "G-K79JSXENG3"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let queue=[];
-let queueKeys=[];
-const titleCache={};
+let queue = [];
+let queueKeys = [];
 
-function watchQueue(){
+const titleCache = {};
 
- db.ref("queue").on("value",snap=>{
+/* ----------------
+Queue Watch
+---------------- */
 
-  const data=snap.val()||{};
-  queue=Object.values(data);
-  queueKeys=Object.keys(data);
+function watchQueue() {
+
+ db.ref("queue").on("value", snap => {
+
+  const data = snap.val() || {};
+
+  queue = Object.values(data);
+  queueKeys = Object.keys(data);
 
   updateQueueUI();
 
@@ -26,143 +36,231 @@ function watchQueue(){
 
 }
 
-function send(){
+/* ----------------
+Send URL
+---------------- */
 
- const input=document.getElementById("url");
- const url=input.value.trim();
- if(!url) return;
+function send() {
+
+ const input = document.getElementById("url");
+ if (!input) return;
+
+ let url = input.value.trim();
+ if (!url) return;
+
  db.ref("queue").push(url);
- input.value="";
+
+ input.value = "";
 
 }
 
-function updateQueueUI(){
+/* ----------------
+Queue UI
+---------------- */
 
- const list=document.getElementById("queue");
- list.innerHTML="";
+function updateQueueUI() {
 
- queue.forEach((url,i)=>{
+ const list = document.getElementById("queue");
+ if (!list) return;
 
-  const id=getID(url);
-  const thumb=`https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+ list.innerHTML = "";
 
-  const li=document.createElement("li");
+ queue.forEach((url, i) => {
 
-  const title=titleCache[url]||"読み込み中...";
+  const id = getID(url);
+  const thumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
 
-  li.innerHTML=`
-  <div style="display:flex;gap:10px">
+  const li = document.createElement("li");
 
-  <img src="${thumb}" width="120">
+  const title = titleCache[url] || "読み込み中...";
 
-  <div style="flex:1">
+  let buttons = "";
 
-  <div style="font-weight:bold">${title}</div>
+  /* --- 1番目（再生中） --- */
 
-  <button onclick="forcePlay(${i})">▶</button>
-  <button onclick="moveUp(${i})">↑</button>
-  <button onclick="moveDown(${i})">↓</button>
-  <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+  if (i === 0) {
 
-  </div>
+   buttons = `<span style="color:red;font-weight:bold">▶ 再生中</span>`;
+
+   li.style.background = "#333";
+   li.style.borderLeft = "5px solid red";
+
+  }
+
+  /* --- 2番目以降 --- */
+
+  else {
+
+   let upButton = "";
+
+   if (i === 1) {
+    upButton = `<button disabled>↑</button>`;
+   } else {
+    upButton = `<button onclick="moveUp(${i})">↑</button>`;
+   }
+
+   buttons = `
+   <button onclick="forcePlay(${i})">▶</button>
+   ${upButton}
+   <button onclick="moveDown(${i})">↓</button>
+   <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+   `;
+
+  }
+
+  li.innerHTML = `
+  <div style="display:flex;gap:10px;align-items:flex-start">
+
+    <img src="${thumb}" width="120">
+
+    <div style="flex:1">
+
+      <div style="font-weight:bold">${title}</div>
+      <div style="font-size:12px;color:#aaa">${url}</div>
+
+      <div style="margin-top:5px">
+      ${buttons}
+      </div>
+
+    </div>
+
   </div>
   `;
 
   list.appendChild(li);
 
-  if(!titleCache[url]) fetchTitle(url);
+  if (!titleCache[url]) {
+   fetchTitle(url);
+  }
 
  });
 
 }
 
-function fetchTitle(url){
+/* ----------------
+Title Fetch
+---------------- */
+
+function fetchTitle(url) {
 
  fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
- .then(r=>r.json())
- .then(data=>{
+  .then(r => r.json())
+  .then(data => {
 
-  titleCache[url]=data.title;
-  updateQueueUI();
+   titleCache[url] = data.title;
+   updateQueueUI();
 
- })
- .catch(()=>{
+  })
+  .catch(() => {
 
-  titleCache[url]="タイトル取得失敗";
+   titleCache[url] = "タイトル取得失敗";
 
- });
+  });
 
 }
 
-function forcePlay(index){
+/* ----------------
+Force Play
+---------------- */
+
+function forcePlay(index) {
 
  db.ref("control").set({
-  type:"force",
-  url:queue[index],
-  time:Date.now()
+  type: "force",
+  url: queue[index],
+  time: Date.now()
  });
 
 }
 
-function reload(){
+/* ----------------
+Reload
+---------------- */
+
+function reload() {
 
  db.ref("control").set({
-  type:"reload",
-  time:Date.now()
+  type: "reload",
+  time: Date.now()
  });
 
 }
 
-function skip(){
+/* ----------------
+Skip
+---------------- */
+
+function skip() {
 
  db.ref("control").set({
-  type:"skip",
-  time:Date.now()
+  type: "skip",
+  time: Date.now()
  });
 
 }
 
-function removeQueue(key){
- db.ref("queue/"+key).remove();
+/* ----------------
+Remove Queue
+---------------- */
+
+function removeQueue(key) {
+
+ db.ref("queue/" + key).remove();
+
 }
 
-function moveUp(index){
+/* ----------------
+Move Up
+---------------- */
 
- if(index<=0) return;
+function moveUp(index) {
 
- const updates={};
+ if (index <= 1) return;
 
- updates["queue/"+queueKeys[index]]=queue[index-1];
- updates["queue/"+queueKeys[index-1]]=queue[index];
+ const updates = {};
+
+ updates["queue/" + queueKeys[index]] = queue[index - 1];
+ updates["queue/" + queueKeys[index - 1]] = queue[index];
 
  db.ref().update(updates);
 
 }
 
-function moveDown(index){
+/* ----------------
+Move Down
+---------------- */
 
- if(index>=queue.length-1) return;
+function moveDown(index) {
 
- const updates={};
+ if (index >= queue.length - 1) return;
 
- updates["queue/"+queueKeys[index]]=queue[index+1];
- updates["queue/"+queueKeys[index+1]]=queue[index];
+ const updates = {};
+
+ updates["queue/" + queueKeys[index]] = queue[index + 1];
+ updates["queue/" + queueKeys[index + 1]] = queue[index];
 
  db.ref().update(updates);
 
 }
 
-function getID(url){
+/* ----------------
+YouTube ID Extract
+---------------- */
 
- const reg =
- /(?:youtube\.com\/(?:.*v=|v\/|embed\/)|youtu\.be\/)([^#\&\?]{11})/;
+function getID(url) {
+
+ const reg = /(?:youtube\.com\/(?:.*v=|v\/|embed\/|shorts\/)|youtu\.be\/)([^#\&\?]{11})/;
 
  const match = url.match(reg);
 
- if(match) return match[1];
+ if (match) return match[1];
 
  return url;
 
 }
+
+/* ----------------
+Start
+---------------- */
 
 watchQueue();
