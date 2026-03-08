@@ -213,6 +213,32 @@ function reload() {
 }
 
 /* ----------------
+loop-1
+---------------- */
+
+function loopOne() {
+
+ db.ref("control").set({
+  type: "loopOne",
+  time: Date.now()
+ });
+
+}
+
+/* ----------------
+loop-all
+---------------- */
+
+function loopAll() {
+
+ db.ref("control").set({
+  type: "loopAll",
+  time: Date.now()
+ });
+
+}
+
+/* ----------------
 Skip
 ---------------- */
 
