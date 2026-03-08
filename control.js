@@ -128,7 +128,7 @@ function send(){
 
  input.value="";
 
-  updateQueueUI();
+ updateQueueUI();
 
 }
 
