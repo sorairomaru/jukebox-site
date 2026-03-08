@@ -21,93 +21,97 @@ let loop=false;
 
 const titleCache={};
 
-/* ----------------
-YouTube Player
----------------- */
+// /* ----------------
+// YouTube Player
+// ---------------- */
 
-function onYouTubeIframeAPIReady(){
+// function onYouTubeIframeAPIReady(){
 
- if(!document.getElementById("player")) return;
+//  if(!document.getElementById("player")) return;
 
- player = new YT.Player('player',{
-  height:'100%',
-  width:'100%',
-  events:{
-   'onStateChange':onStateChange
-  }
- });
+//  player = new YT.Player('player',{
+//   height:'100%',
+//   width:'100%',
+//   events:{
+//    'onStateChange':onStateChange
+//   }
+//  });
 
- watchQueue();
-}
+//  watchQueue();
+// }
 
-function onStateChange(e){
+// function onStateChange(e){
 
- if(e.data===0){
+//  if(e.data===0){
 
-  if(loop){
-   replayCurrent();
-   return;
-  }
+//   if(loop){
+//    replayCurrent();
+//    return;
+//   }
 
-  playNext();
+//   playNext();
 
- }
+//  }
 
-}
+// }
 
-/* ----------------
-Queue
----------------- */
+// /* ----------------
+// Queue
+// ---------------- */
 
-function watchQueue(){
+// function watchQueue(){
 
- db.ref("queue").on("value",snap=>{
+//  db.ref("queue").on("value",snap=>{
 
-  const data=snap.val()||{};
+//   const data=snap.val()||{};
 
-  queue=Object.values(data);
-  queueKeys=Object.keys(data);
+//   queue=Object.values(data);
+//   queueKeys=Object.keys(data);
 
-  updateQueueUI();
+//   updateQueueUI();
 
- });
+//  });
 
-}
+// }
 
-function playNext(){
+// function playNext(){
 
- if(queue.length===0) return;
+//  if(queue.length===0) return;
 
- const currentKey=queueKeys[0];
+//  const currentKey=queueKeys[0];
 
- db.ref("queue/"+currentKey).remove();
+//  db.ref("queue/"+currentKey).remove();
 
- if(queue.length==0) return;
+//  if(queue.length==0) return;
 
- const nextUrl=queue[0];
- const id=getID(nextUrl);
+//  const nextUrl=queue[0];
+//  const id=getID(nextUrl);
 
- player.loadVideoById(id);
+//  player.loadVideoById(id);
 
-}
+// }
 
 /* ----------------
 Replay Current
 ---------------- */
 
-function replayCurrent(){
+// function replayCurrent(){
 
- if(!player) return;
- if(queue.length===0) return;
+//  if(!player) return;
+//  if(queue.length===0) return;
 
- const url=queue[0];
- const id=getID(url);
+//  const url=queue[0];
+//  const id=getID(url);
 
- player.stopVideo();
- player.loadVideoById(id);
+//  player.stopVideo();
+//  player.loadVideoById(id);
 
+// }
+
+function reload_send(){
+    socket.emit("reload")
 }
-
+  
 /* ----------------
 Send
 ---------------- */
@@ -273,38 +277,38 @@ function moveDown(index){
 
 }
 
-/* ----------------
-Controls
----------------- */
+// /* ----------------
+// Controls
+// ---------------- */
 
-function skip(){
+// function skip(){
 
- playNext();
+//  playNext();
 
-}
+// }
 
-function toggleLoop(){
+// function toggleLoop(){
 
- loop=!loop;
- alert("Loop:"+loop);
+//  loop=!loop;
+//  alert("Loop:"+loop);
 
-}
+// }
 
-/* ----------------
-Utility
----------------- */
+// /* ----------------
+// Utility
+// ---------------- */
 
-function getID(url){
+// function getID(url){
 
- let m=url.match(/v=([^&]+)/);
+//  let m=url.match(/v=([^&]+)/);
 
- if(m) return m[1];
+//  if(m) return m[1];
 
- if(url.includes("youtu.be"))
-  return url.split("/").pop();
+//  if(url.includes("youtu.be"))
+//   return url.split("/").pop();
 
- return url;
+//  return url;
 
-}
+// }
 
-watchQueue();
+// watchQueue();
