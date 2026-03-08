@@ -198,6 +198,10 @@ function updateQueueUI(){
 
 }
 
+socket.on("updateQueueUI", () => {
+    updateQueueUI();
+})
+
 /* ----------------
 Title Fetch
 ---------------- */
