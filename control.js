@@ -128,6 +128,8 @@ function send(){
 
  input.value="";
 
+  updateQueueUI();
+
 }
 
 /* ----------------
