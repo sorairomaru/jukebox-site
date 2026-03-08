@@ -111,11 +111,12 @@ function toggleLoop(){
 
 function getID(url){
 
- let m=url.match(/v=([^&]+)/);
- if(m) return m[1];
+ const reg =
+ /(?:youtube\.com\/(?:.*v=|v\/|embed\/)|youtu\.be\/)([^#\&\?]{11})/;
 
- if(url.includes("youtu.be"))
-  return url.split("/").pop();
+ const match = url.match(reg);
+
+ if(match) return match[1];
 
  return url;
 
