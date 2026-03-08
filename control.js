@@ -18,6 +18,8 @@ let queueKeys = [];
 
 const titleCache = {};
 
+let loopMode = "none";
+
 /* ----------------
 Queue Watch
 ---------------- */
@@ -312,7 +314,47 @@ function getID(url) {
 }
 
 /* ----------------
+Loop
+---------------- */
+
+function watchLoop(){
+
+ db.ref("loop/mode").on("value",snap=>{
+
+  loopMode = snap.val() || "none";
+
+  updateLoopUI();
+
+ });
+
+}
+function updateLoopUI(){
+
+ const el = document.getElementById("loopStatus");
+ if(!el) return;
+
+ if(loopMode==="none") el.textContent="ループなし";
+ if(loopMode==="one") el.textContent="一曲ループ";
+ if(loopMode==="all") el.textContent="全曲ループ";
+
+}
+function toggleLoop(){
+
+ let next="none";
+
+ if(loopMode==="none") next="one";
+ else if(loopMode==="one") next="all";
+ else next="none";
+
+ db.ref("loop").set({
+  mode:next
+ });
+
+}
+
+/* ----------------
 Start
 ---------------- */
 
 watchQueue();
+watchLoop();
