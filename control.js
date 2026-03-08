@@ -21,6 +21,8 @@ let loop=false;
 
 const titleCache={};
 
+const socket = io();
+
 // /* ----------------
 // YouTube Player
 // ---------------- */
