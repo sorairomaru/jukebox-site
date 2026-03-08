@@ -9,6 +9,7 @@ const firebaseConfig = {
   measurementId: "G-K79JSXENG3"
 };
 
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
