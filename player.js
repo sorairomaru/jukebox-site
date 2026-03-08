@@ -108,6 +108,10 @@ function reload(){
 
 }
 
+socket.on("reload", () => {
+    reload();
+})
+
 // /* ----------------
 // Send
 // ---------------- */
