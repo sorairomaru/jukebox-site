@@ -31,7 +31,8 @@ function send(){
  const input=document.getElementById("url");
  const url=input.value.trim();
  if(!url) return;
-
+ url = url.split("&")[0];
+ url = url.split("?si=")[0];
  db.ref("queue").push(url);
  input.value="";
 
@@ -155,11 +156,12 @@ function moveDown(index){
 
 function getID(url){
 
- let m=url.match(/v=([^&]+)/);
- if(m) return m[1];
+ const reg =
+ /(?:youtube\.com\/(?:.*v=|v\/|embed\/)|youtu\.be\/)([^#\&\?]{11})/;
 
- if(url.includes("youtu.be"))
-  return url.split("/").pop();
+ const match = url.match(reg);
+
+ if(match) return match[1];
 
  return url;
 
