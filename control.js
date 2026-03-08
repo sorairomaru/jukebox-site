@@ -294,21 +294,21 @@ function moveDown(index){
 
 // }
 
-// /* ----------------
-// Utility
-// ---------------- */
+/* ----------------
+Utility
+---------------- */
 
-// function getID(url){
+function getID(url){
 
-//  let m=url.match(/v=([^&]+)/);
+ let m=url.match(/v=([^&]+)/);
 
-//  if(m) return m[1];
+ if(m) return m[1];
 
-//  if(url.includes("youtu.be"))
-//   return url.split("/").pop();
+ if(url.includes("youtu.be"))
+  return url.split("/").pop();
 
-//  return url;
+ return url;
 
-// }
+}
 
 // watchQueue();
