@@ -92,10 +92,10 @@ function playNext(){
 }
 
 /* ----------------
-Replay Current
+Reload
 ---------------- */
 
-function replayCurrent(){
+function reload(){
 
  if(!player) return;
  if(queue.length===0) return;
@@ -108,170 +108,170 @@ function replayCurrent(){
 
 }
 
-/* ----------------
-Send
----------------- */
+// /* ----------------
+// Send
+// ---------------- */
 
-function send(){
+// function send(){
 
- const input=document.getElementById("url");
- if(!input) return;
+//  const input=document.getElementById("url");
+//  if(!input) return;
 
- const url=input.value.trim();
- if(!url) return;
+//  const url=input.value.trim();
+//  if(!url) return;
 
- db.ref("queue").push(url);
+//  db.ref("queue").push(url);
 
- input.value="";
+//  input.value="";
 
-}
+// }
 
-/* ----------------
-Queue UI
----------------- */
+// /* ----------------
+// Queue UI
+// ---------------- */
 
-function updateQueueUI(){
+// function updateQueueUI(){
 
- const list=document.getElementById("queue");
- if(!list) return;
+//  const list=document.getElementById("queue");
+//  if(!list) return;
 
- list.innerHTML="";
+//  list.innerHTML="";
 
- queue.forEach((url,i)=>{
+//  queue.forEach((url,i)=>{
 
-  const id=getID(url);
-  const thumb=`https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+//   const id=getID(url);
+//   const thumb=`https://img.youtube.com/vi/${id}/mqdefault.jpg`;
 
-  const li=document.createElement("li");
+//   const li=document.createElement("li");
 
-  const title=titleCache[url]||"読み込み中...";
+//   const title=titleCache[url]||"読み込み中...";
 
-  let buttons="";
+//   let buttons="";
 
-  if(i===0){
+//   if(i===0){
 
-   buttons=`<span style="color:red;font-weight:bold">▶ 再生中</span>`;
+//    buttons=`<span style="color:red;font-weight:bold">▶ 再生中</span>`;
 
-  }else{
+//   }else{
 
-   buttons=`
-   <button onclick="forcePlay(${i})">▶</button>
-   <button onclick="moveUp(${i})">↑</button>
-   <button onclick="moveDown(${i})">↓</button>
-   <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
-   `;
+//    buttons=`
+//    <button onclick="forcePlay(${i})">▶</button>
+//    <button onclick="moveUp(${i})">↑</button>
+//    <button onclick="moveDown(${i})">↓</button>
+//    <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
+//    `;
 
-  }
+//   }
 
-  li.innerHTML=`
-  <div style="display:flex;gap:10px;align-items:flex-start">
+//   li.innerHTML=`
+//   <div style="display:flex;gap:10px;align-items:flex-start">
 
-    <img src="${thumb}" width="120">
+//     <img src="${thumb}" width="120">
 
-    <div style="flex:1">
+//     <div style="flex:1">
 
-      <div style="font-weight:bold">${title}</div>
-      <div style="font-size:12px;color:#666">${url}</div>
+//       <div style="font-weight:bold">${title}</div>
+//       <div style="font-size:12px;color:#666">${url}</div>
 
-      <div class="buttons">
-      ${buttons}
-      </div>
+//       <div class="buttons">
+//       ${buttons}
+//       </div>
 
-    </div>
+//     </div>
 
-  </div>
-  `;
+//   </div>
+//   `;
 
-  list.appendChild(li);
+//   list.appendChild(li);
 
-  if(!titleCache[url]){
-   fetchTitle(url);
-  }
+//   if(!titleCache[url]){
+//    fetchTitle(url);
+//   }
 
- });
+//  });
 
-}
+// }
 
-/* ----------------
-Title Fetch
----------------- */
+// /* ----------------
+// Title Fetch
+// ---------------- */
 
-function fetchTitle(url){
+// function fetchTitle(url){
 
- fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
- .then(r=>r.json())
- .then(data=>{
+//  fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`)
+//  .then(r=>r.json())
+//  .then(data=>{
 
-  titleCache[url]=data.title;
-  updateQueueUI();
+//   titleCache[url]=data.title;
+//   updateQueueUI();
 
- })
- .catch(()=>{
+//  })
+//  .catch(()=>{
 
-  titleCache[url]="タイトル取得失敗";
+//   titleCache[url]="タイトル取得失敗";
 
- });
+//  });
 
-}
+// }
 
-/* ----------------
-Force Play
----------------- */
+// /* ----------------
+// Force Play
+// ---------------- */
 
-function forcePlay(index){
+// function forcePlay(index){
 
- const url=queue[index];
- const id=getID(url);
+//  const url=queue[index];
+//  const id=getID(url);
 
- player.loadVideoById(id);
+//  player.loadVideoById(id);
 
-}
+// }
 
-/* ----------------
-Queue Remove
----------------- */
+// /* ----------------
+// Queue Remove
+// ---------------- */
 
-function removeQueue(key){
+// function removeQueue(key){
 
- db.ref("queue/"+key).remove();
+//  db.ref("queue/"+key).remove();
 
-}
+// }
 
-/* ----------------
-Reorder
----------------- */
+// /* ----------------
+// Reorder
+// ---------------- */
 
-function moveUp(index){
+// function moveUp(index){
 
- if(index<=1) return;
+//  if(index<=1) return;
 
- const aKey=queueKeys[index];
- const bKey=queueKeys[index-1];
+//  const aKey=queueKeys[index];
+//  const bKey=queueKeys[index-1];
 
- const updates={};
+//  const updates={};
 
- updates["queue/"+aKey]=queue[index-1];
- updates["queue/"+bKey]=queue[index];
+//  updates["queue/"+aKey]=queue[index-1];
+//  updates["queue/"+bKey]=queue[index];
 
- db.ref().update(updates);
+//  db.ref().update(updates);
 
-}
+// }
 
-function moveDown(index){
+// function moveDown(index){
 
- if(index===queue.length-1) return;
+//  if(index===queue.length-1) return;
 
- const aKey=queueKeys[index];
- const bKey=queueKeys[index+1];
+//  const aKey=queueKeys[index];
+//  const bKey=queueKeys[index+1];
 
- const updates={};
+//  const updates={};
 
- updates["queue/"+aKey]=queue[index+1];
- updates["queue/"+bKey]=queue[index];
+//  updates["queue/"+aKey]=queue[index+1];
+//  updates["queue/"+bKey]=queue[index];
 
- db.ref().update(updates);
+//  db.ref().update(updates);
 
-}
+// }
 
 /* ----------------
 Controls
