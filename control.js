@@ -20,6 +20,9 @@ const titleCache = {};
 
 let loopMode = "none";
 
+let history = [];
+let historyKeys = [];
+
 /* ----------------
 Queue Watch
 ---------------- */
@@ -52,6 +55,9 @@ function send() {
  if (!url) return;
 
  db.ref("queue").push(url);
+
+ /* 履歴追加 */
+ db.ref("history").push(url);
 
  input.value = "";
 
@@ -352,9 +358,105 @@ function toggleLoop(){
 
 }
 
+
+/* ----------------
+History
+---------------- */
+//履歴監視
+function watchHistory(){
+
+ db.ref("history").on("value",snap=>{
+
+  const data=snap.val()||{};
+
+  history = Object.values(data).reverse();
+  historyKeys = Object.keys(data).reverse();
+
+  limitHistory();
+
+  updateHistoryUI();
+
+ });
+
+}
+//最大20件制限
+function limitHistory(){
+
+ if(history.length<=20) return;
+
+ const removeCount = history.length - 20;
+
+ for(let i=0;i<removeCount;i++){
+  db.ref("history/"+historyKeys[historyKeys.length-1-i]).remove();
+ }
+
+}
+//履歴UI
+function updateHistoryUI(){
+
+ const list=document.getElementById("history");
+ if(!list) return;
+
+ list.innerHTML="";
+
+ history.forEach((url,i)=>{
+
+  const id=getID(url);
+  const thumb=`https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+
+  const title=titleCache[url]||"読み込み中...";
+
+  const li=document.createElement("li");
+
+  li.innerHTML=`
+
+  <div style="display:flex;gap:10px">
+
+   <img src="${thumb}" width="120">
+
+   <div style="flex:1">
+
+    <div style="font-weight:bold">${title}</div>
+    <div style="font-size:12px;color:#aaa">${url}</div>
+
+    <div style="margin-top:5px">
+
+     <button onclick="addToQueue('${url}')">キュー追加</button>
+     <button onclick="removeHistory('${historyKeys[i]}')">削除</button>
+
+    </div>
+
+   </div>
+
+  </div>
+
+  `;
+
+  list.appendChild(li);
+
+  if(!titleCache[url]){
+   fetchTitle(url);
+  }
+
+ });
+
+}
+//キュー追加ボタン
+function addToQueue(url){
+
+ db.ref("queue").push(url);
+
+}
+//履歴削除
+function removeHistory(key){
+
+ db.ref("history/"+key).remove();
+
+}
 /* ----------------
 Start
 ---------------- */
 
 watchQueue();
 watchLoop();
+watchHistory();
