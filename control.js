@@ -183,11 +183,9 @@ function forcePlay(index){
 
  const targetUrl = queue[index];
 
- /* 再生中削除 */
- updates["queue/" + currentKey] = null;
-
  /* 押した動画を一番上に */
- updates["queue/" + targetKey] = targetUrl;
+ updates["queue/" + currentKey] = targetUrl;
+ updates["queue/" + targetKey] = null;
 
  db.ref().update(updates);
 
