@@ -120,18 +120,12 @@ function updateQueueUI() {
 
   else {
 
-   let upButton = "";
-
-   if (i === 1) {
-    upButton = `<button disabled>↑</button>`;
-   } else {
-    upButton = `<button onclick="moveUp(${i})">↑</button>`;
-   }
-
    buttons = `
    <button onclick="forcePlay(${i})">▶</button>
-   ${upButton}
+   <button onclick="moveTop(${i})">↑↑</button>
+   <button onclick="moveUp(${i})">↑</button>
    <button onclick="moveDown(${i})">↓</button>
+   <button onclick="moveBot(${i})">↓↓</button>
    <button onclick="removeQueue('${queueKeys[i]}')">削除</button>
    `;
 
@@ -295,6 +289,24 @@ function removeQueue(key) {
 }
 
 /* ----------------
+Move Top
+---------------- */
+
+function moveTop(index) {
+
+ if (index <= 1) return;
+
+ const updates = {};
+ for(i = index; i > 1; i--){
+   updates["queue/" + queueKeys[i]] = queue[i - 1];
+ }
+ updates["queue/" + queueKeys[1]] = queue[index];
+
+ db.ref().update(updates);
+
+}
+
+/* ----------------
 Move Up
 ---------------- */
 
@@ -323,6 +335,24 @@ function moveDown(index) {
 
  updates["queue/" + queueKeys[index]] = queue[index + 1];
  updates["queue/" + queueKeys[index + 1]] = queue[index];
+
+ db.ref().update(updates);
+
+}
+
+/* ----------------
+Move Bot
+---------------- */
+
+function moveBot(index) {
+
+ if (index >= queue.length - 1) return;
+
+ const updates = {};
+ for(i = index; i < queue.length - 1; i++){
+   updates["queue/" + queueKeys[i]] = queue[i + 1];
+ }
+ updates["queue/" + queueKeys[queue.length - 1]] = queue[index];
 
  db.ref().update(updates);
 
