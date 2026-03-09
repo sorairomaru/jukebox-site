@@ -402,7 +402,7 @@ function watchHistory(){
 //最大20件制限
 function limitHistory(){
 
- if(history.length<=20) return;
+ if(history.length<=50) return;
 
  const removeCount = history.length - 20;
 
