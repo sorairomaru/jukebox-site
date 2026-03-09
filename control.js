@@ -63,6 +63,23 @@ function send() {
 
 }
 
+function once_send() {
+
+ const input = document.getElementById("url");
+ if (!input) return;
+
+ let url = input.value.trim();
+ if (!url) return;
+
+ db.ref("once").set({
+  url:url,
+  time:Date.now()
+ });
+
+ input.value = "";
+
+}
+
 /* ----------------
 Queue UI
 ---------------- */
