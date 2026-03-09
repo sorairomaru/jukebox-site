@@ -76,6 +76,9 @@ function once_send() {
   time:Date.now()
  });
 
+ /* 履歴追加 */
+ db.ref("history").push(url);
+
  input.value = "";
 
 }
