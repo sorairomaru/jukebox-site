@@ -211,7 +211,8 @@ function forcePlay(index){
  const currentKey = queueKeys[0];
 
  const targetUrl = queue[index];
-
+ const currentUrl = queue[0];
+  
  /* 押した動画を一番上に */
  updates["queue/" + currentKey] = targetUrl;
  updates["queue/" + targetKey] = null;
@@ -223,6 +224,10 @@ function forcePlay(index){
   time:Date.now()
  });
 
+ if(loopMode==="all"){
+  db.ref("queue").push(currentUrl);
+ }
+   
 }
 
 
