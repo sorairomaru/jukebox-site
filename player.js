@@ -27,6 +27,7 @@ function onYouTubeIframeAPIReady(){
  watchQueue();
  watchLoop();
  watchControl();
+ watchOnce();
 
 }
 
@@ -104,6 +105,18 @@ function watchLoop(){
 
   loopMode = snap.val() || "none";
 
+ });
+
+}
+
+function watchOnce(){
+
+ db.ref("once").on("value",snap=>{
+
+  const cmd=snap.val();
+  if(!cmd) return;
+  const id=getID(cmd.url);
+  player.loadVideoById(id);
  });
 
 }
