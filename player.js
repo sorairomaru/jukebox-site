@@ -157,13 +157,34 @@ function toggleLoop(){
 
 function getID(url){
 
- const reg =
- /(?:youtube\.com\/(?:.*v=|v\/|embed\/)|youtu\.be\/)([^#\&\?]{11})/;
+ // const reg =
+ // /(?:youtube\.com\/(?:.*v=|v\/|embed\/)|youtu\.be\/)([^#\&\?]{11})/;
 
- const match = url.match(reg);
+ // const match = url.match(reg);
 
- if(match) return match[1];
+ // if(match) return match[1];
 
- return url;
-
+ // return url;
+  try {
+    const u = new URL(url);
+  
+    // watch?v=
+    if (u.searchParams.get("v")) {
+      return u.searchParams.get("v");
+    }
+  
+    // youtu.be
+    if (u.hostname === "youtu.be") {
+      return u.pathname.slice(1);
+    }
+  
+    // shorts
+    if (u.pathname.startsWith("/shorts/")) {
+      return u.pathname.split("/")[2];
+    }
+  
+    return null;
+  } catch {
+    return null;
+  }
 }
