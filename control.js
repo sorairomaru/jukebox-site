@@ -23,6 +23,9 @@ let loopMode = "none";
 let history = [];
 let historyKeys = [];
 
+let playlists = {};
+let playlistKeys = [];
+
 /* ----------------
 Queue Watch
 ---------------- */
@@ -531,6 +534,151 @@ function removeHistory(key){
  db.ref("history/"+key).remove();
 
 }
+
+/* ----------------
+PlayList
+---------------- */
+
+function openPlaylistManager(){
+
+ document.getElementById("playlistModal").style.display="block";
+ watchPlaylists();
+
+}
+
+function closePlaylistManager(){
+
+ document.getElementById("playlistModal").style.display="none";
+
+}
+
+//プレイリスト保存
+
+function savePlaylist(){
+
+ const name = document.getElementById("playlistName").value.trim();
+
+ if(!name){
+  alert("保存名を入力してください");
+  return;
+ }
+
+ if(queue.length === 0){
+  alert("キューが空です");
+  return;
+ }
+
+ const playlist = {
+  name:name,
+  items:queue
+ };
+
+ db.ref("playlists").push(playlist);
+
+ document.getElementById("playlistName").value="";
+
+}
+
+//プレイリスト監視
+
+function watchPlaylists(){
+
+ db.ref("playlists").on("value",snap=>{
+
+  playlists = snap.val() || {};
+  playlistKeys = Object.keys(playlists);
+
+  updatePlaylistUI();
+
+ });
+
+}
+
+//プレイリストUI
+
+function updatePlaylistUI(){
+
+ const list=document.getElementById("playlistList");
+ if(!list) return;
+
+ list.innerHTML="";
+
+ playlistKeys.forEach(key=>{
+
+  const pl = playlists[key];
+
+  const li=document.createElement("li");
+
+  li.innerHTML=`
+
+  <div style="border:1px solid #ccc;padding:10px;margin-bottom:10px">
+
+  <b>${pl.name}</b> (${pl.items.length}曲)
+
+  <div style="margin-top:5px">
+
+  <button onclick="playlistAdd('${key}')">キューに追加</button>
+
+  <button onclick="playlistOverwrite('${key}')">キューを上書き</button>
+
+  <button onclick="playlistDelete('${key}')">削除</button>
+
+  </div>
+
+  </div>
+
+  `;
+
+  list.appendChild(li);
+
+ });
+
+}
+
+//キューに追加
+
+function playlistAdd(key){
+
+ const items = playlists[key].items;
+
+ items.forEach(url=>{
+  db.ref("queue").push(url);
+ });
+
+}
+
+//キュー上書き
+
+function playlistOverwrite(key){
+
+ if(!confirm("現在のキューを全削除してプレイリストを読み込みますか？")){
+  return;
+ }
+
+ db.ref("queue").remove().then(()=>{
+
+  const items = playlists[key].items;
+
+  items.forEach(url=>{
+   db.ref("queue").push(url);
+  });
+
+ });
+
+}
+
+//プレイリスト削除
+
+function playlistDelete(key){
+
+ if(!confirm("プレイリストを削除しますか？")){
+  return;
+ }
+
+ db.ref("playlists/"+key).remove();
+
+}
+
 /* ----------------
 Start
 ---------------- */
