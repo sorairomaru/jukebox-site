@@ -16,8 +16,26 @@
 <button onclick="send()">キューに追加</button>
 <button onclick="once_send()">上書き再生</button>
 
+<!--  -->
 <button onclick="openPlaylistManager()">プレイリスト管理</button>
 
+<div id="playlistModal" class="modal" style="display:none">
+
+<h2>プレイリスト管理</h2>
+
+<input id="playlistName" placeholder="保存名">
+
+<button onclick="savePlaylist()">現在のキューをプレイリスト登録</button>
+
+<h3>プレイリスト一覧</h3>
+
+<ul id="playlistList"></ul>
+
+<button onclick="closePlaylistManager()">閉じる</button>
+
+</div>
+<!--  -->
+  
 <button onclick="reload()">再読み込み</button>
 
 <!-- <button onclick="skip()">スキップ</button> -->
@@ -36,22 +54,7 @@
   
 </div>
 
-  
-<div id="playlistModal" class="modal" style="display:none">
 
-<h2>プレイリスト管理</h2>
-
-<input id="playlistName" placeholder="保存名">
-
-<button onclick="savePlaylist()">現在のキューをプレイリスト登録</button>
-
-<h3>プレイリスト一覧</h3>
-
-<ul id="playlistList"></ul>
-
-<button onclick="closePlaylistManager()">閉じる</button>
-
-</div>
 
   
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
