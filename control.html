@@ -22,7 +22,7 @@
 <!--  -->
 <button onclick="openPlaylistManager()">プレイリスト管理</button>
 
-<div id="playlistModal" class="modal" style="display:none">
+<!-- <div id="playlistModal" class="modal" style="display:none">
 
 <h2>プレイリスト管理</h2>
 
@@ -36,12 +36,13 @@
 
 <button onclick="closePlaylistManager()">閉じる</button>
 
-</div>
+</div> -->
 <!--  -->
-  
-<button onclick="reload()">再読み込み</button>
 
-<!-- <button onclick="skip()">スキップ</button> -->
+<div style="margin-top:5px">
+  <button onclick="reload()">再読み込み</button>
+  <button onclick="skip()">スキップ</button>
+</div>
 
 <h2>Loop</h2>
 <div>
@@ -57,7 +58,25 @@
   
 </div>
 
+<div id="playlistModal" class="modal">
 
+<div class="modal-content">
+
+<h2>プレイリスト管理</h2>
+
+<input id="playlistName" placeholder="保存名">
+
+<button onclick="savePlaylist()">現在のキューをプレイリスト登録</button>
+
+<h3>プレイリスト一覧</h3>
+
+<ul id="playlistList"></ul>
+
+<button onclick="closePlaylistManager()">閉じる</button>
+
+</div>
+
+</div>
 
   
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
