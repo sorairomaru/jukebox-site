@@ -13,8 +13,11 @@
 <h2>YouTube URL送信</h2>
 
 <input id="url" placeholder="https://youtube.com/...">
-<button onclick="send()">キューに追加</button>
-<button onclick="once_send()">上書き再生</button>
+<div style="margin-top:5px">
+  <button onclick="send()">キューに追加</button>
+  <button onclick="once_send()">即時再生(キュー追加なし)</button>
+</div>
+
 
 <!--  -->
 <button onclick="openPlaylistManager()">プレイリスト管理</button>
