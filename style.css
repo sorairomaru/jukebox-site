@@ -90,7 +90,7 @@ border-radius:5px;
 
 /* モーダル本体 */
 .modal-content{
- background:#fff;
+ background:#808080;
  padding:20px;
  width:500px;
  max-height:80vh;
