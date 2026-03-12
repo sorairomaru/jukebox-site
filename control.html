@@ -10,54 +10,48 @@
 
 <div class="send-container">
 
-<h2>YouTube URL送信</h2>
+<h2>YouTube URL</h2>
 
-<input id="url" placeholder="https://youtube.com/...">
+<input id="url" placeholder="動画URL">
 <div style="margin-top:5px">
   <button onclick="send()">キューに追加</button>
   <button onclick="once_send()">即時再生(キュー追加なし)</button>
 </div>
-
-
-<!--  -->
-<button onclick="openPlaylistManager()">プレイリスト管理</button>
-
-<div id="playlistModal" class="modal" style="display:none">
-
-  <div class="modal-content">
-      
-    <h2>プレイリスト管理</h2>
-    
-    <input id="playlistName" placeholder="保存名">
-    
-    <button onclick="savePlaylist()">現在のキューをプレイリスト登録</button>
-    
-    <h3>プレイリスト一覧</h3>
-    
-    <ul id="playlistList"></ul>
-    
-    <button onclick="closePlaylistManager()">閉じる</button>
   
-  </div>
-  
-</div>
 <!--  -->
-
+<h2>再生管理</h2>
+  
 <div style="margin-top:5px">
   <button onclick="reload()">再読み込み</button>
   <button onclick="skip()">スキップ</button>
 </div>
 
-<h2>Loop</h2>
+<!--  -->
+  
 <div>
 <button onclick="toggleLoop()">ループ切替</button>
 <span id="loopStatus">none</span>
 </div>
+
+<!--  -->
   
-<h2>Queue</h2>
+<h2>キュー管理</h2>
+    
+<button onclick="openPlaylistManager()">プレイリスト管理</button>
+<div id="playlistModal" class="modal" style="display:none">
+  <div class="modal-content">     
+    <h2>プレイリスト管理</h2>  
+    <input id="playlistName" placeholder="保存名"> 
+    <button onclick="savePlaylist()">現在のキューをプレイリスト登録</button> 
+    <h3>プレイリスト一覧</h3>  
+    <ul id="playlistList"></ul> 
+    <button onclick="closePlaylistManager()">閉じる</button>
+  </div>
+</div>
+  
 <ul id="queue"></ul>
 
-<h2>History</h2>
+<h2>再生履歴</h2>
 <ul id="history"></ul>
   
 </div>
