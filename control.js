@@ -541,7 +541,7 @@ PlayList
 
 function openPlaylistManager(){
 
- document.getElementById("playlistModal").style.display="block";
+ document.getElementById("playlistModal").style.display="flex";
  watchPlaylists();
 
 }
@@ -676,6 +676,16 @@ function playlistDelete(key){
  }
 
  db.ref("playlists/"+key).remove();
+
+}
+
+window.onclick=function(e){
+
+ const modal=document.getElementById("playlistModal");
+
+ if(e.target===modal){
+  closePlaylistManager();
+ }
 
 }
 
