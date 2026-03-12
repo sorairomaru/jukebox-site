@@ -491,7 +491,7 @@ function updateHistoryUI(){
 
   li.innerHTML=`
 
-  <div style="display:flex;gap:10px">
+  <div style="display:flex;gap:10px;align-items:flex-start">
 
    <img src="${thumb}" width="120">
 
