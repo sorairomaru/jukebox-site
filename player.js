@@ -146,21 +146,16 @@ function reload(){
 
 function skip(){
   if(loopMode==="all"){
-  
     if(queue.length>0){
-  
      const firstKey = queueKeys[0];
      const firstUrl = queue[0];
-  
      db.ref("queue/"+firstKey).remove();
-  
-     db.ref("queue").push(firstUrl);
-  
+     db.ref("queue").push(firstUrl); 
     }
-  
-    return;
+  }else{
+    playNext();
   }
-  playNext();
+  reload();
 }
 
 function toggleLoop(){
