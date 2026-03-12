@@ -145,7 +145,22 @@ function reload(){
 }
 
 function skip(){
- playNext();
+  if(loopMode==="all"){
+  
+    if(queue.length>0){
+  
+     const firstKey = queueKeys[0];
+     const firstUrl = queue[0];
+  
+     db.ref("queue/"+firstKey).remove();
+  
+     db.ref("queue").push(firstUrl);
+  
+    }
+  
+    return;
+  }
+  playNext();
 }
 
 function toggleLoop(){
